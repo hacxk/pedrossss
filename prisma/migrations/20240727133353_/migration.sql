@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "FacebookInfo" ALTER COLUMN "fbId" SET DATA TYPE TEXT;

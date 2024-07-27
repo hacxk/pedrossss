@@ -17,17 +17,16 @@ model User {
 }
 
 model FacebookInfo {
-  id                  String                  @id @default(uuid())
+  id                  String                @id @default(uuid())
   userId              Int
-  User                User                 @relation(fields: [userId], references: [id])
-  fbId                BigInt               @unique
+  User                User                  @relation(fields: [userId], references: [id])
+  fbId                String                @unique 
   name                String?
   first_name          String?
   last_name           String?
   email               String?
   profile_picture_url String?
   facebookInfoSecrets FacebookInfoSecret[]
-
   @@index([userId])
 }
 
@@ -37,6 +36,5 @@ model FacebookInfoSecret {
   FacebookInfo   FacebookInfo @relation(fields: [facebookInfoId], references: [id])
   fbAccessToken  String
   fbRefreshToken String?
-
   @@index([facebookInfoId])
 }

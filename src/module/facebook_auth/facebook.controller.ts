@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { FacebookService } from "./facebook.service";
 import { JwtAuthGuard } from "src/helpers/guard/jwtauth.guard";
+import { PrismaService } from "src/shared/prisma/prisma.service";
 
 interface AuthenticatedRequest extends Request {
     user: any;
@@ -10,7 +11,10 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('auth')
 export class FacebookController {
-    constructor(private facebookService: FacebookService) { }
+    constructor(
+        private facebookService: FacebookService,
+        private prisma: PrismaService
+    ) { }
 
     @Get('facebook')
     @UseGuards(JwtAuthGuard)
@@ -22,7 +26,18 @@ export class FacebookController {
     @Get('facebook/redirect')
     @UseGuards(AuthGuard('facebook'))
     async facebookLoginRedirect(@Req() req: AuthenticatedRequest): Promise<any> {
-        const user = req.user; 
+        const user = req.user;
         return { msg: 'Facebook login successful', user };
+    }
+
+    @Get('test')
+    async test() {
+        const allFacebookInfo = await this.prisma.facebookInfo.findMany({
+            include: {
+                facebookInfoSecrets: true,
+                User: true,
+            },
+        });
+        return allFacebookInfo;
     }
 }

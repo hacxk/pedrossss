@@ -30,7 +30,7 @@ export class FacebookService {
                         name: profile.name,
                         FacebookInfo: {
                             create: {
-                                fbId: BigInt(profile.id),
+                                fbId: profile.id.toString(), // Convert to string
                                 name: profile.name,
                                 first_name: profile.first_name,
                                 last_name: profile.last_name,
@@ -57,7 +57,7 @@ export class FacebookService {
                 await this.prisma.facebookInfo.create({
                     data: {
                         userId: user.id,
-                        fbId: BigInt(profile.id),
+                        fbId: profile.id.toString(), // Convert to string
                         name: profile.name,
                         first_name: profile.first_name,
                         last_name: profile.last_name,
@@ -75,6 +75,7 @@ export class FacebookService {
                 await this.prisma.facebookInfo.update({
                     where: { id: user.FacebookInfo[0].id },
                     data: {
+                        fbId: profile.id.toString(), // Convert to string
                         name: profile.name,
                         first_name: profile.first_name,
                         last_name: profile.last_name,
