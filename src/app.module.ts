@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { SharedModule } from './shared/shared.module';
-import { AuthModule } from './auth/auth.module';
-import { PrismaService } from './shared/service/prisma.service';
-import { FacebookModule } from './facebook/facebook.module';
+import { AuthModule } from './module/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [SharedModule, AuthModule, FacebookModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,],
   controllers: [AppController],
   providers: [
-    AppService,
-    PrismaService
+    AppService
   ],
 })
-export class AppModule {}
+export class AppModule { }
