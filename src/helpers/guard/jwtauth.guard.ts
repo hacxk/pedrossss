@@ -15,8 +15,13 @@ export class JwtAuthGuard extends PassportStrategy(Strategy) implements CanActiv
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
-                (request: Request) => request.cookies['authToken'], 
-                ExtractJwt.fromAuthHeaderAsBearerToken(), 
+                (request: Request) => {
+                    const cookie = request.cookies['authToken'];
+                    if (cookie) {
+                        return cookie;
+                    }
+                    return ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+                },
             ]),
             secretOrKey: configService.get<string>('JWT_SECRET'),
         });
@@ -24,9 +29,18 @@ export class JwtAuthGuard extends PassportStrategy(Strategy) implements CanActiv
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
-        const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+        const token = ExtractJwt.fromExtractors([
+            (request: Request) => {
+                const cookie = request.cookies['authToken'];
+                if (cookie) {
+                    return cookie;
+                }
+                return ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+            },
+        ])(request);
+
         if (!token) {
-            throw new UnauthorizedException('Token not found');
+            throw new UnauthorizedException('Token not found. Please login to get a token');
         }
         try {
             const user = await this.jwtService.verifyAsync(token);
