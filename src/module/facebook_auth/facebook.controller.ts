@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req } from "@nestjs/common";
+import { Controller, Get, UseGuards, Query } from "@nestjs/common";
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from "src/helpers/guard/jwtauth.guard";
 import { PrismaService } from "src/shared/prisma/prisma.service";

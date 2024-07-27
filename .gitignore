@@ -3,6 +3,7 @@
 /node_modules
 /build
 src/module/test
+test.js
 
 # Logs
 logs

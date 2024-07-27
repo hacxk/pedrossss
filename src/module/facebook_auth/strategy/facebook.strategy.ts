@@ -8,12 +8,12 @@ import { ConfigService } from '@nestjs/config';
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     constructor(
         private readonly facebookService: FacebookService,
-        private configService: ConfigService
+        private readonly configService: ConfigService
     ) {
         super({
             clientID: configService.get<string>('FACEBOOK_APP_ID'),
             clientSecret: configService.get<string>('FACEBOOK_APP_SECRET'),
-            callbackURL: 'http://localhost:3000/auth/facebook/redirect',
+            callbackURL: configService.get<string>('FACEBOOK_CALLBACK_URL') || 'http://localhost:3000/auth/facebook/redirect',
             scope: ['email', 'public_profile'],
             profileFields: ['id', 'name', 'displayName', 'emails', 'photos'],
         });
@@ -25,11 +25,16 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
         profile: Profile,
         done: (err: any, user: any, info?: any) => void
     ): Promise<any> {
-        if (!profile || !profile._json) {
-            console.error('Error fetching Facebook profile:', profile);
-            return done(new BadRequestException('Facebook profile data not found'), null);
+        try {
+            if (!profile || !profile._json) {
+                throw new BadRequestException('Facebook profile data not found');
+            }
+
+            const user = await this.facebookService.validateFacebookLogin(profile._json, accessToken);
+            return done(null, user);
+        } catch (err) {
+            console.error('Error in FacebookStrategy validate method:', err);
+            return done(err, false);
         }
-        const user = await this.facebookService.validateFacebookLogin(profile._json, accessToken);
-        return user;
     }
 }

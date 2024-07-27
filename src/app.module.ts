@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './module/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { FacebookModule } from './module/facebook_auth/facebook.module';
+import { FacebookMarketingModule } from './module/facebook_marketing/fbmarketing.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { FacebookModule } from './module/facebook_auth/facebook.module';
       isGlobal: true,
     }),
     AuthModule,
-    FacebookModule],
+    FacebookModule,
+    FacebookMarketingModule],
   controllers: [AppController],
   providers: [
     AppService
