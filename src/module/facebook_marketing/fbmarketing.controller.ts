@@ -1,8 +1,12 @@
-// facebook-marketing.controller.ts
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { FacebookMarketingService } from './fbmarketing.service';
-import { CampaignDTO } from './dto/campaign.sto'; // Import your DTOs
+import { CampaignDTO } from './dto/campaign.dto';
 import { JwtAuthGuard } from 'src/helpers/guard/jwtauth.guard';
+
+interface UserInfo extends Request {
+    user: any;
+}
 
 @Controller('facebook-marketing')
 export class FacebookMarketingController {
@@ -12,8 +16,9 @@ export class FacebookMarketingController {
     @UseGuards(JwtAuthGuard)
     async getCampaignsByMessage(
         @Query('accessToken') accessToken: string,
-        @Query('message') messageText: string
+        @Query('message') messageText: string,
+        @Req() req: UserInfo
     ): Promise<CampaignDTO[]> {
-        return this.facebookMarketingService.getCampaignsByMessage(accessToken, messageText);
+        return this.facebookMarketingService.getCampaignsByMessage(accessToken, messageText, req.user);
     }
 }
